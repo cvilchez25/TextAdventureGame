@@ -1,20 +1,20 @@
 #final project: Carolina Vilchez
 
-# GAME WITH NPC + CHALLENGE
+
+# FINAL GAME VERSION
 # =========================
 
 import datetime
-# GLOBAL VARIABLES
-# =========================
+
 inventory = []
 
-# LOGGING FUNCTION
+# LOGGING
 # =========================
 def log_event(event):
     with open("audit_log.txt", "a") as file:
         file.write(f"{datetime.datetime.now()} - {event}\n")
 
-# SAFE INPUT FUNCTION
+# SAFE INPUT
 # =========================
 def safe_input(prompt, valid_choices):
     while True:
@@ -22,79 +22,138 @@ def safe_input(prompt, valid_choices):
         if choice in valid_choices:
             return choice
         else:
-            print("Invalid choice. Please try again.")
+            print("Invalid choice. Try again.")
             log_event("INVALID_INPUT")
 
-# INVENTORY FUNCTIONS
+# INVENTORY
 # =========================
 def add_item(item):
     if item not in inventory:
         inventory.append(item)
-        print(f"You collected: {item}")
+        print(f"You got: {item}")
         log_event(f"ITEM_ADDED: {item}")
 
 def show_inventory():
-    print("\nYour Inventory:")
-    if len(inventory) == 0:
+    print("\nInventory:")
+    if not inventory:
         print("Empty")
     else:
         for item in inventory:
             print("-", item)
 
-# NPC + CHALLENGE
+# NPCS
 # =========================
-def guard_encounter():
-    print("\nGuard: Stop right there!")
+def guard():
+    print("\nGuard: You can't pass!")
     print("1. Fight")
     print("2. Run")
 
     choice = safe_input("Choose: ", ["1", "2"])
 
     if choice == "1":
-        print("You defeated the guard and took his key.")
+        print("You beat the guard.")
         add_item("Guard Key")
-        log_event("GUARD_DEFEATED")
+        log_event("GUARD_FIGHT")
     else:
-        print("You escaped safely.")
-        log_event("GUARD_ESCAPED")
-        
+        print("You ran away.")
+        log_event("GUARD_RUN")
 
-# GAME START
+def scientist():
+    print("\nScientist: Help me!")
+    print("You help the scientist.")
+    add_item("Secret Code")
+    log_event("SCIENTIST_HELP")
+
+def hacker():
+    print("\nHacker: I'll help you.")
+    add_item("Hacking Tool")
+    log_event("HACKER_HELP")
+
+def medic():
+    print("\nMedic gives you a med kit.")
+    add_item("Med Kit")
+    log_event("MEDIC_HELP")
+
+def robot():
+    print("\nRobot gives access chip.")
+    add_item("Access Chip")
+    log_event("ROBOT_HELP")
+
+# CHALLENGE 2
+# =========================
+def password_puzzle():
+    print("\nTerminal locked (hint: 2026)")
+    attempt = input("Enter password: ")
+
+    if attempt == "2026":
+        print("Access granted.")
+        log_event("PASSWORD_SUCCESS")
+        return True
+    else:
+        print("Wrong password.")
+        log_event("PASSWORD_FAIL")
+        return False
+
+# PATHS
+# =========================
+def path_keycard():
+    print("\nYou go find a keycard.")
+    guard()
+    medic()
+
+    if "Guard Key" in inventory:
+        print("You unlocked the door and escaped!")
+        log_event("ENDING_KEYCARD")
+    else:
+        print("You couldn't escape.")
+        log_event("ENDING_FAIL")
+
+def path_hack():
+    print("\nYou try hacking.")
+    hacker()
+    robot()
+
+    if password_puzzle():
+        print("You hacked the system and escaped!")
+        log_event("ENDING_HACK")
+    else:
+        print("Hack failed.")
+        log_event("ENDING_FAIL")
+
+def path_scientist():
+    print("\nYou follow the scientist.")
+    scientist()
+
+    if "Secret Code" in inventory:
+        print("You found a secret exit and escaped!")
+        log_event("ENDING_SECRET")
+    else:
+        print("You got stuck.")
+        log_event("ENDING_FAIL")
+
+# MAIN GAME
 # =========================
 print("Welcome to Escape the Facility!")
 log_event("GAME_START")
 
 while True:
-    print("\nWhat do you want to do?")
-    print("1. Find Keycard")
+    print("\n1. Find Keycard")
     print("2. Hack System")
     print("3. Help Scientist")
-    print("4. View Inventory")
+    print("4. Inventory")
     print("5. Quit")
 
-    choice = safe_input("Enter choice: ", ["1", "2", "3", "4", "5"])
+    choice = safe_input("Choose: ", ["1","2","3","4","5"])
 
     if choice == "1":
-        print("You search the office...")
-        guard_encounter()
-        add_item("Keycard")
-        log_event("CHOICE_KEYCARD")
-
+        path_keycard()
     elif choice == "2":
-        print("You enter the server room.")
-        add_item("Hacking Tool")
-        log_event("CHOICE_HACK")
-
+        path_hack()
     elif choice == "3":
-        print("Scientist: Please help me!")
-        print("You help the scientist and get a secret code.")
-        add_item("Secret Code")
-        log_event("CHOICE_SCIENTIST")
-
+        path_scientist()
     elif choice == "4":
         show_inventory()
-
     elif choice == "5":
-        print("Goodbye!")
+        print("Bye.")
         log_event("GAME_END")
         break
