@@ -1,3 +1,4 @@
+#small fixes
 #final project: Carolina Vilchez
 
 
