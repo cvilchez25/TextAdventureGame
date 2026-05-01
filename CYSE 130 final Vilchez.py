@@ -1,24 +1,19 @@
 #final project: Carolina Vilchez
 
-# =========================
-# GAME WITH INVENTORY SYSTEM
+# GAME WITH NPC + CHALLENGE
 # =========================
 
 import datetime
-
-# =========================
 # GLOBAL VARIABLES
 # =========================
 inventory = []
 
-# =========================
 # LOGGING FUNCTION
 # =========================
 def log_event(event):
     with open("audit_log.txt", "a") as file:
         file.write(f"{datetime.datetime.now()} - {event}\n")
 
-# =========================
 # SAFE INPUT FUNCTION
 # =========================
 def safe_input(prompt, valid_choices):
@@ -29,7 +24,6 @@ def safe_input(prompt, valid_choices):
         else:
             print("Invalid choice. Please try again.")
             log_event("INVALID_INPUT")
-
 
 # INVENTORY FUNCTIONS
 # =========================
@@ -47,6 +41,23 @@ def show_inventory():
         for item in inventory:
             print("-", item)
 
+# NPC + CHALLENGE
+# =========================
+def guard_encounter():
+    print("\nGuard: Stop right there!")
+    print("1. Fight")
+    print("2. Run")
+
+    choice = safe_input("Choose: ", ["1", "2"])
+
+    if choice == "1":
+        print("You defeated the guard and took his key.")
+        add_item("Guard Key")
+        log_event("GUARD_DEFEATED")
+    else:
+        print("You escaped safely.")
+        log_event("GUARD_ESCAPED")
+        
 
 # GAME START
 # =========================
@@ -64,21 +75,26 @@ while True:
     choice = safe_input("Enter choice: ", ["1", "2", "3", "4", "5"])
 
     if choice == "1":
-        print("You search the office and find a keycard.")
+        print("You search the office...")
+        guard_encounter()
         add_item("Keycard")
         log_event("CHOICE_KEYCARD")
+
     elif choice == "2":
         print("You enter the server room.")
         add_item("Hacking Tool")
         log_event("CHOICE_HACK")
+
     elif choice == "3":
-        print("You help a scientist.")
+        print("Scientist: Please help me!")
+        print("You help the scientist and get a secret code.")
         add_item("Secret Code")
         log_event("CHOICE_SCIENTIST")
+
     elif choice == "4":
         show_inventory()
+
     elif choice == "5":
         print("Goodbye!")
         log_event("GAME_END")
         break
-    
